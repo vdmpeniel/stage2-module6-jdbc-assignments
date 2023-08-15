@@ -186,12 +186,10 @@ public class SimpleJDBCRepository {
         //repository.logUserData(repository.updateUser());
 
         // delete user
-        repository.deleteUser(39l);
+        repository.deleteUser(39L);
 
         // get all users
-        repository.findAllUser().forEach(user -> {
-            repository.logUserData(user);
-        });
+        repository.findAllUser().forEach(repository::logUserData);
     }
     private void logUserData(User user){
         System.out.println(

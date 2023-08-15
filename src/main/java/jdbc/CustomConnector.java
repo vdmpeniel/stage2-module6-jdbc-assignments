@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 
 public class CustomConnector {
-    private Logger logger = Logger.getLogger("CustomConnector");
+    private final Logger logger = Logger.getLogger("CustomConnector");
 
     public Connection getConnection(String url) {
         try{

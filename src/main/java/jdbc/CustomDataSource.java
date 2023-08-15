@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
-    private Logger logger = Logger.getLogger("CustomDataSource");
+    private final Logger logger = Logger.getLogger("CustomDataSource");
     private static volatile CustomDataSource instance;
     private CustomConnector customConnector;
     private final String driver;
