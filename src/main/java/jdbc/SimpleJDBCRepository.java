@@ -15,13 +15,13 @@ import java.util.logging.Logger;
 public class SimpleJDBCRepository {
 
     private final Logger LOGGER = Logger.getLogger("CustomConnector");
-    private final CustomDataSource DS = CustomDataSource.getInstance();
+    private final CustomDataSource ds = CustomDataSource.getInstance();
     private final String ID = "id";
     private final String FIRST_NAME = "firstname";
     private final String LAST_NAME = "lastname";
     private final String AGE = "age";
 
-    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, last_ame, age) VALUES(?, ?, ?, ?)";
+    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname=?, lastname=?, age=? WHERE id=?";
     private static final String DELETE_USER = "DELETE FROM myusers WHERE id=?";
     private static final String FIND_USER_BY_ID_SQL = "SELECT * FROM myusers WHERE id=?";
@@ -30,7 +30,7 @@ public class SimpleJDBCRepository {
 
 
     public Long createUser(User user) {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setLong(1, user.getId());
                 ps.setString(2, user.getFirstName());
@@ -53,7 +53,7 @@ public class SimpleJDBCRepository {
     }
 
     public User findUserById(Long userId) {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(FIND_USER_BY_ID_SQL)) {
                 ps.setLong(1, userId);
                 try(ResultSet resultset = ps.executeQuery()){
@@ -76,7 +76,7 @@ public class SimpleJDBCRepository {
     }
 
     public User findUserByName(String userName) {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(FIND_USER_BY_NAME_SQL)){
                 ps.setString(1, userName);
 
@@ -98,7 +98,7 @@ public class SimpleJDBCRepository {
     }
 
     public List<User> findAllUser() {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(Statement statement = connection.createStatement()){
                 try(ResultSet resultSet = statement.executeQuery(FIND_ALL_USER_SQL)){
                     List<User> userList = new ArrayList<>();
@@ -120,7 +120,7 @@ public class SimpleJDBCRepository {
     }
 
     public User updateUser(User user) {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(UPDATE_USER_SQL, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, user.getFirstName());
                 ps.setString(2, user.getLastName());
@@ -144,7 +144,7 @@ public class SimpleJDBCRepository {
     }
 
     public void deleteUser(Long userId) {
-        try(Connection connection = DS.getConnection()){
+        try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(DELETE_USER, Statement.RETURN_GENERATED_KEYS)){
                 ps.setLong(1, userId);
                 int affectedRows = ps.executeUpdate();
