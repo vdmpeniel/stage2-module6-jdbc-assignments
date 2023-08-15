@@ -79,12 +79,13 @@ public class SimpleJDBCRepository {
                 ps.setLong(1, userId);
                 try(ResultSet resultset = ps.executeQuery()){
                     if(resultset.next()) {
-                        return new User(
-                                resultset.getLong("id"),
-                                resultset.getString("first_name"),
-                                resultset.getString("last_name"),
-                                resultset.getInt("age")
-                        );
+                        return User.builder()
+                            .id(resultset.getLong("id"))
+                            .firstName(resultset.getString("first_name"))
+                            .lastName(resultset.getString("last_name"))
+                            .age(resultset.getInt("age"))
+                            .build();
+
                     } else { throw new SQLException("User with id:" + userId + " not found."); }
                 }
             }
@@ -103,13 +104,12 @@ public class SimpleJDBCRepository {
 
                 try(ResultSet resultset = ps.executeQuery()){
                     if(resultset.next()) {
-                        return new User(
-                                resultset.getLong("id"),
-                                resultset.getString("first_name"),
-                                resultset.getString("last_name"),
-                                resultset.getInt("age")
-                        );
-                    } else { throw new SQLException("User with name:" + userName + " not found."); }
+                        return User.builder()
+                            .id(resultset.getLong("id"))
+                            .firstName(resultset.getString("first_name"))
+                            .lastName(resultset.getString("last_name"))
+                            .age(resultset.getInt("age"))
+                            .build();                    } else { throw new SQLException("User with name:" + userName + " not found."); }
                 }
             }
         } catch(SQLException se){
