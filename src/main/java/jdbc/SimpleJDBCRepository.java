@@ -30,24 +30,6 @@ public class SimpleJDBCRepository {
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE first_name=?";
     private static final String findAllUserSQL = "SELECT * FROM myusers";
 
-//    public Long createUser() {
-//
-//        try(Connection connection = ds.getConnection()){
-//            try(PreparedStatement ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS)) {
-//                int affectedRows = ps.executeUpdate();
-//                if(affectedRows > 0) {
-//                    try(ResultSet generatedKeys = ps.getGeneratedKeys()) {
-//                        if(generatedKeys.next()) {
-//                            return generatedKeys.getLong(1);
-//                        }
-//                    }
-//                } else { throw new SQLException("Unable to create user."); }
-//            }
-//        } catch(SQLException se){
-//            logger.info(se.getMessage());
-//        }
-//        return null;
-//    }
 
     public Long createUser(User user) {
         try(Connection connection = ds.getConnection()){
@@ -135,7 +117,7 @@ public class SimpleJDBCRepository {
                 }
             }
         } catch(SQLException se){ logger.info(se.getMessage()); }
-        return new ArrayList<User>();
+        return new ArrayList<>();
     }
 
     public User updateUser(User user) {
