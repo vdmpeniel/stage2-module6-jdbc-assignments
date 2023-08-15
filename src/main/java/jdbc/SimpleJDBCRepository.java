@@ -23,39 +23,39 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "INSERT INTO myusers(first_name, last_name, age) VALUES('Ana', 'Valdes', 26)";
-    private static final String createUserWithPreparedSQL = "INSERT INTO myusers(first_name, last_name, age) VALUES(?, ?, ?) RETURNING id";
-    private static final String updateUserSQL = "UPDATE myusers SET first_name='Yuni', last_name='Garcia', age=32 WHERE id=11";
+    private static final String createUserSQL = "INSERT INTO myusers(id, first_name, last_name, age) VALUES(?, ?, ?, ?) RETURNING id";
+    private static final String updateUserSQL = "UPDATE myusers SET first_name=?, last_name=?, age=? WHERE id=?";
     private static final String deleteUser = "DELETE FROM myusers WHERE id=?";
     private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id=?";
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE first_name=?";
     private static final String findAllUserSQL = "SELECT * FROM myusers";
 
-    public Long createUser() {
+//    public Long createUser() {
+//
+//        try(Connection connection = ds.getConnection()){
+//            try(PreparedStatement ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS)) {
+//                int affectedRows = ps.executeUpdate();
+//                if(affectedRows > 0) {
+//                    try(ResultSet generatedKeys = ps.getGeneratedKeys()) {
+//                        if(generatedKeys.next()) {
+//                            return generatedKeys.getLong(1);
+//                        }
+//                    }
+//                } else { throw new SQLException("Unable to create user."); }
+//            }
+//        } catch(SQLException se){
+//            logger.info(se.getMessage());
+//        }
+//        return null;
+//    }
 
+    public Long createUser(User user) {
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS)) {
-                int affectedRows = ps.executeUpdate();
-                if(affectedRows > 0) {
-                    try(ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                        if(generatedKeys.next()) {
-                            return generatedKeys.getLong(1);
-                        }
-                    }
-                } else { throw new SQLException("Unable to create user."); }
-            }
-        } catch(SQLException se){
-            logger.info(se.getMessage());
-        }
-        return null;
-    }
-
-    public Long createUser(String firstName, String lastName, int age) {
-        try(Connection connection = ds.getConnection()){
-            try(PreparedStatement ps = connection.prepareStatement(createUserWithPreparedSQL, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, firstName);
-                ps.setString(2, lastName);
-                ps.setInt(3, age);
+                ps.setLong(1, user.getId());
+                ps.setString(2, user.getFirstName());
+                ps.setString(3, user.getLastName());
+                ps.setInt(4, user.getAge());
 
                 int affectedRows = ps.executeUpdate();
                 if(affectedRows > 0) {
@@ -138,9 +138,14 @@ public class SimpleJDBCRepository {
         return new ArrayList<User>();
     }
 
-    public User updateUser() {
+    public User updateUser(User user) {
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(updateUserSQL, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, user.getFirstName());
+                ps.setString(2, user.getLastName());
+                ps.setInt(3, user.getAge());
+                ps.setLong(4, user.getId());
+
                 int affectedRows = ps.executeUpdate();
                 if(affectedRows > 0) {
                     try(ResultSet generatedKeys = ps.getGeneratedKeys()) {
@@ -172,20 +177,44 @@ public class SimpleJDBCRepository {
     }
 
 
+
+
+
+
+
+
+    /*
+    * Just for testing
+    *
+    * */
     public static void main(String[] args) {
         SimpleJDBCRepository repository = new SimpleJDBCRepository();
 
         // create new user and get it by id
-        //User newUser = repository.findUserById(repository.createUser("Yuya", "Perez", 52));
-        //repository.logUserData(newUser);
+        User newUser = repository.findUserById(repository.createUser(
+                User.builder()
+                        .id(25L)
+                        .firstName("Julio")
+                        .lastName("Coltazar")
+                        .age(126)
+                        .build()
+        ));
+        repository.logUserData(newUser);
 
         // get user by name
-        //repository.logUserData(repository.findUserByName("Gumersindo"));
+        repository.logUserData(repository.findUserByName("Julio"));
 
         // update user
-        //repository.logUserData(repository.updateUser());
+        repository.logUserData(repository.updateUser(
+                User.builder()
+                        .id(25L)
+                        .firstName("Julio")
+                        .lastName("Iglesias")
+                        .age(66)
+                        .build()
+        ));
 
-        // delete user
+        //  delete user
         repository.deleteUser(39L);
 
         // get all users
