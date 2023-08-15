@@ -26,19 +26,11 @@ public class CustomDataSource implements DataSource {
 
 
     private CustomDataSource(String driver, String url, String password, String name) {
-        // Properties props = new Properties();
         this.driver = driver;
         this.url = url;
         this.password = password;
         this.name = name;
         this.customConnector = new CustomConnector();
-
-        // Register the PostgreSQL driver (if not already registered)
-//        try {
-//            Class.forName(driver);
-//        } catch (ClassNotFoundException e) {
-//            logger.severe("Failed to load PostgreSQL driver: " + e.getMessage());
-//        }
     }
 
 
@@ -72,20 +64,22 @@ public class CustomDataSource implements DataSource {
     // ... rest of the methods ...
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return new PrintWriter(System.out);
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        return 0;
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

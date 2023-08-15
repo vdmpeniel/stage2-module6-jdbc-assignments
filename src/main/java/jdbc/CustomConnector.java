@@ -1,9 +1,5 @@
 package jdbc;
 
-
-
-import org.postgresql.Driver;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,8 +18,6 @@ public class CustomConnector {
 
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
@@ -34,9 +28,8 @@ public class CustomConnector {
         return connection;
     }
     private void logConnectionStatus(Connection connection){
-        logger.info(
-            (Objects.nonNull(connection)) ? "Connected to the database."
-                    : "Failed to connect to database."
-        );
+        String status = (Objects.nonNull(connection)) ? "Connected to the database."
+                : "Failed to connect to database.";
+        logger.info(status);
     }
 }

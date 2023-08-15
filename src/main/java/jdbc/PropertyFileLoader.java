@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class PropertyFileLoader {
-    private final Logger logger = Logger.getLogger("CustomConnector");
+    private final Logger logger = Logger.getLogger("PropertyFileLoader");
     private final Properties properties = new Properties();
 
 
@@ -21,20 +21,13 @@ public class PropertyFileLoader {
                 .getResourceAsStream(filename)
         ) {
             properties.load(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+        } catch (IOException ioe) {
+            logger.info(ioe.getMessage());
         }
 
     }
 
     public Properties getProperties(){
         return properties;
-    }
-
-    public static void main(String[] args) {
-        PropertyFileLoader pl = new PropertyFileLoader("app.properties");
-        Properties props = pl.getProperties();
-        System.out.println("Driver: " + props.getProperty("postgres.driver"));
     }
 }
