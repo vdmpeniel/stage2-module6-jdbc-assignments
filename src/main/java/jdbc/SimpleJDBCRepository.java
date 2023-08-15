@@ -162,7 +162,7 @@ public class SimpleJDBCRepository {
 
     }
 
-    private void deleteUser(Long userId) {
+    public void deleteUser(Long userId) {
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(deleteUser, Statement.RETURN_GENERATED_KEYS)){
                 ps.setLong(1, userId);
