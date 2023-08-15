@@ -16,11 +16,16 @@ public class SimpleJDBCRepository {
 
     private final Logger LOGGER = Logger.getLogger("CustomConnector");
     private final CustomDataSource DS = CustomDataSource.getInstance();
-    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, first_name, last_name, age) VALUES(?, ?, ?, ?)";
-    private static final String UPDATE_USER_SQL = "UPDATE myusers SET first_name=?, last_name=?, age=? WHERE id=?";
+    private final String ID = "id";
+    private final String FIRST_NAME = "firstname";
+    private final String LAST_NAME = "lastname";
+    private final String AGE = "age";
+
+    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, last_ame, age) VALUES(?, ?, ?, ?)";
+    private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname=?, lastname=?, age=? WHERE id=?";
     private static final String DELETE_USER = "DELETE FROM myusers WHERE id=?";
     private static final String FIND_USER_BY_ID_SQL = "SELECT * FROM myusers WHERE id=?";
-    private static final String FIND_USER_BY_NAME_SQL = "SELECT * FROM myusers WHERE first_name=?";
+    private static final String FIND_USER_BY_NAME_SQL = "SELECT * FROM myusers WHERE firstname=?";
     private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers";
 
 
@@ -54,10 +59,10 @@ public class SimpleJDBCRepository {
                 try(ResultSet resultset = ps.executeQuery()){
                     if(resultset.next()) {
                         return User.builder()
-                            .id(resultset.getLong("id"))
-                            .firstName(resultset.getString("first_name"))
-                            .lastName(resultset.getString("last_name"))
-                            .age(resultset.getInt("age"))
+                            .id(resultset.getLong(ID))
+                            .firstName(resultset.getString(FIRST_NAME))
+                            .lastName(resultset.getString(LAST_NAME))
+                            .age(resultset.getInt(AGE))
                             .build();
 
                     } else { throw new SQLException("User with id:" + userId + " not found."); }
@@ -78,11 +83,12 @@ public class SimpleJDBCRepository {
                 try(ResultSet resultset = ps.executeQuery()){
                     if(resultset.next()) {
                         return User.builder()
-                            .id(resultset.getLong("id"))
-                            .firstName(resultset.getString("first_name"))
-                            .lastName(resultset.getString("last_name"))
-                            .age(resultset.getInt("age"))
-                            .build();                    } else { throw new SQLException("User with name:" + userName + " not found."); }
+                            .id(resultset.getLong(ID))
+                            .firstName(resultset.getString(FIRST_NAME))
+                            .lastName(resultset.getString(LAST_NAME))
+                            .age(resultset.getInt(AGE))
+                            .build();
+                    } else { throw new SQLException("User with name:" + userName + " not found."); }
                 }
             }
         } catch(SQLException se){
@@ -99,10 +105,10 @@ public class SimpleJDBCRepository {
                     while(resultSet.next()){
                         userList.add(
                             User.builder()
-                                .id(resultSet.getLong("id"))
-                                .firstName(resultSet.getString("first_name"))
-                                .lastName(resultSet.getString("last_name"))
-                                .age(resultSet.getInt("age"))
+                                .id(resultSet.getLong(ID))
+                                .firstName(resultSet.getString(FIRST_NAME))
+                                .lastName(resultSet.getString(LAST_NAME))
+                                .age(resultSet.getInt(AGE))
                                 .build()
                         );
                     }
