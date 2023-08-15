@@ -16,13 +16,14 @@ import java.util.logging.Logger;
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
+    private Logger logger = Logger.getLogger("CustomDataSource");
     private static volatile CustomDataSource instance;
     private CustomConnector customConnector;
     private final String driver;
     private final String url;
     private final String name;
     private final String password;
-    Logger logger = Logger.getLogger("CustomDataSource");
+
 
     private CustomDataSource(String driver, String url, String password, String name) {
         // Properties props = new Properties();

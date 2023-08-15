@@ -17,7 +17,8 @@ import java.util.logging.Logger;
 @NoArgsConstructor
 public class SimpleJDBCRepository {
 
-    Logger logger = Logger.getLogger("CustomConnector");
+    private Logger logger = Logger.getLogger("CustomConnector");
+    private CustomDataSource ds = CustomDataSource.getInstance();
     private Connection connection = null;
     private PreparedStatement ps = null;
     private Statement st = null;
@@ -31,7 +32,7 @@ public class SimpleJDBCRepository {
     private static final String findAllUserSQL = "SELECT * FROM myusers";
 
     public Long createUser() {
-        CustomDataSource ds = CustomDataSource.getInstance();
+
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS)) {
                 int affectedRows = ps.executeUpdate();
@@ -50,7 +51,6 @@ public class SimpleJDBCRepository {
     }
 
     public Long createUser(String firstName, String lastName, int age) {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(createUserWithPreparedSQL, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, firstName);
@@ -73,7 +73,6 @@ public class SimpleJDBCRepository {
     }
 
     public User findUserById(Long userId) {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(findUserByIdSQL)) {
                 ps.setLong(1, userId);
@@ -97,7 +96,6 @@ public class SimpleJDBCRepository {
     }
 
     public User findUserByName(String userName) {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(findUserByNameSQL)){
                 ps.setString(1, userName);
@@ -119,7 +117,6 @@ public class SimpleJDBCRepository {
     }
 
     public List<User> findAllUser() {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(Statement statement = connection.createStatement()){
                 try(ResultSet resultSet = statement.executeQuery(findAllUserSQL)){
@@ -142,7 +139,6 @@ public class SimpleJDBCRepository {
     }
 
     public User updateUser() {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(updateUserSQL, Statement.RETURN_GENERATED_KEYS)) {
                 int affectedRows = ps.executeUpdate();
@@ -162,7 +158,6 @@ public class SimpleJDBCRepository {
     }
 
     private void deleteUser(Long userId) {
-        CustomDataSource ds = CustomDataSource.getInstance();
         try(Connection connection = ds.getConnection()){
             try(PreparedStatement ps = connection.prepareStatement(deleteUser, Statement.RETURN_GENERATED_KEYS)){
                 ps.setLong(1, userId);

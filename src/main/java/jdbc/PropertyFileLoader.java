@@ -6,8 +6,9 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class PropertyFileLoader {
+    private Logger logger = Logger.getLogger("CustomConnector");
     private Properties properties = new Properties();
-    Logger logger = Logger.getLogger("CustomConnector");
+
 
     public PropertyFileLoader(String filename){
         loadPropertyFile(filename);
