@@ -6,8 +6,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class PropertyFileLoader {
-    private final Logger logger = Logger.getLogger("PropertyFileLoader");
-    private final Properties properties = new Properties();
+    private final Logger LOGGER = Logger.getLogger("PropertyFileLoader");
+    private final Properties PROPERTIES = new Properties();
 
 
     public PropertyFileLoader(String filename){
@@ -20,14 +20,15 @@ public class PropertyFileLoader {
                 .getClassLoader()
                 .getResourceAsStream(filename)
         ) {
-            properties.load(inputStream);
+            PROPERTIES.load(inputStream);
+
         } catch (IOException ioe) {
-            logger.info(ioe.getMessage());
+            LOGGER.info(ioe.getMessage());
         }
 
     }
 
-    public Properties getProperties(){
-        return properties;
+    public Properties getPROPERTIES(){
+        return PROPERTIES;
     }
 }

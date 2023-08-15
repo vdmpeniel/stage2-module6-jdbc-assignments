@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 
 public class CustomConnector {
-    private final Logger logger = Logger.getLogger("CustomConnector");
+    private final Logger LOGGER = Logger.getLogger("CustomConnector");
 
     public Connection getConnection(String url) {
         try{
@@ -30,6 +30,6 @@ public class CustomConnector {
     private void logConnectionStatus(Connection connection){
         String status = (Objects.nonNull(connection)) ? "Connected to the database."
                 : "Failed to connect to database.";
-        logger.info(status);
+        LOGGER.info(status);
     }
 }
