@@ -157,4 +157,54 @@ public class SimpleJDBCRepository {
         }
     }
 
+
+
+    /*
+     * Just for testing
+     *
+     * */
+    public static void main(String[] args) {
+        SimpleJDBCRepository repository = new SimpleJDBCRepository();
+
+        // create new user and get it by id
+        User newUser = repository.findUserById(
+            repository.createUser(
+                User.builder()
+                        .id(26L)
+                        .firstName("Julio")
+                        .lastName("Coltazar")
+                        .age(126)
+                        .build()
+            )
+        );
+        repository.logUserData(newUser);
+
+        // get user by name
+        repository.logUserData(repository.findUserByName("Julio"));
+
+        // update user
+        repository.logUserData(repository.updateUser(
+                User.builder()
+                        .id(27L)
+                        .firstName("Julio")
+                        .lastName("Iglesias")
+                        .age(66)
+                        .build()
+        ));
+
+        //  delete user
+        repository.deleteUser(39L);
+
+        // get all users
+        repository.findAllUser().forEach(repository::logUserData);
+    }
+    private void logUserData(User user){
+        System.out.println(
+            user.getId() + " | " +
+            user.getFirstName() + " | " +
+            user.getLastName() +  " | " +
+            user.getAge()
+        );
+    }
+
 }

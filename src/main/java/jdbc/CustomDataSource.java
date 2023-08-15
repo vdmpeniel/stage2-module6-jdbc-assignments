@@ -32,7 +32,10 @@ public class CustomDataSource implements DataSource {
         this.url = url;
         this.password = password;
         this.name = name;
+
     }
+
+
 
 
     public static CustomDataSource getInstance() {
@@ -41,10 +44,10 @@ public class CustomDataSource implements DataSource {
                 PropertyFileLoader propertyFileLoader = new PropertyFileLoader("app.properties");
                 Properties properties = propertyFileLoader.getProperties();
                 instance = new CustomDataSource(
-                        properties.getProperty("postgres.driver"),
-                        properties.getProperty("postgres.url"),
-                        properties.getProperty("postgres.password"),
-                        properties.getProperty("postgres.name")
+                    properties.getProperty("postgres.driver"),
+                    properties.getProperty("postgres.url"),
+                    properties.getProperty("postgres.password"),
+                    properties.getProperty("postgres.name")
                 );
             }
             return instance;
@@ -53,12 +56,12 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return customConnector.getConnection(url, name, password);
+        return customConnector.getConnection(driver, url, name, password);
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return customConnector.getConnection(this.url, username, password);
+        return customConnector.getConnection(this.driver, this.url, username, password);
     }
 
 
