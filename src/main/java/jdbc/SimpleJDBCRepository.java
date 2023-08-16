@@ -220,7 +220,7 @@ public class SimpleJDBCRepository {
                 .build()
         ));
 
-        //  delete user
+        // delete user
         repository.deleteUser(31L);
 
         // get all users
