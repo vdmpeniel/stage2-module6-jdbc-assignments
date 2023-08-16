@@ -168,6 +168,15 @@ public class SimpleJDBCRepository {
         }
     }
 
+    private void logMessage(String query){
+        LOGGER.info("---> " + query);
+    }
+
+
+
+
+
+
 
 
     /*
@@ -181,7 +190,7 @@ public class SimpleJDBCRepository {
         User newUser = repository.findUserById(
             repository.createUser(
                 User.builder()
-                    .id(33L)
+                    .id(Long.valueOf(Math.round(Math.random() * 100000)))
                     .firstName("Julio")
                     .lastName("Coltazar")
                     .age(126)
@@ -195,12 +204,12 @@ public class SimpleJDBCRepository {
 
         // update user
         repository.logUserData(repository.updateUser(
-                User.builder()
-                    .id(27L)
-                    .firstName("Julio")
-                    .lastName("Iglesias")
-                    .age(66)
-                    .build()
+            User.builder()
+                .id(27L)
+                .firstName("Julio")
+                .lastName("Iglesias")
+                .age(66)
+                .build()
         ));
 
         //  delete user
@@ -215,14 +224,10 @@ public class SimpleJDBCRepository {
     private void logUserData(User user){
         logMessage(
             user.getId() + " | " +
-            user.getFirstName() + " | " +
-            user.getLastName() +  " | " +
-            user.getAge()
+                user.getFirstName() + " | " +
+                user.getLastName() +  " | " +
+                user.getAge()
         );
-    }
-
-    private void logMessage(String query){
-        LOGGER.info("QUERY: " + query);
     }
 
 }
