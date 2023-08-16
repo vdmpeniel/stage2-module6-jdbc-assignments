@@ -26,9 +26,9 @@ public class SimpleJDBCRepository {
     private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname=?, lastname=?, age=? WHERE id=?";
     private static final String DELETE_USER = "DELETE FROM myusers WHERE id=?";
-    private static final String FIND_USER_BY_ID_SQL = "SELECT * FROM myusers WHERE id=?";
-    private static final String FIND_USER_BY_NAME_SQL = "SELECT * FROM myusers WHERE firstname=?";
-    private static final String FIND_ALL_USER_SQL = "SELECT * FROM myusers";
+    private static final String FIND_USER_BY_ID_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE id=?";
+    private static final String FIND_USER_BY_NAME_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE firstname=?";
+    private static final String FIND_ALL_USER_SQL = "SELECT id, firstname, lastname, age FROM myusers";
 
     private void logMessage(String message){
         LOGGER.info("---> " + message);
@@ -136,12 +136,10 @@ public class SimpleJDBCRepository {
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
-                try(ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                    if(generatedKeys.next()) {
-                        return findUserById(generatedKeys.getLong(1));
-                    }
-                }
-            } else { throw new SQLException("Unable to create user."); }
+                ResultSet generatedKeys = ps.getGeneratedKeys();
+                if(generatedKeys.next()) {
+                    return findUserById(generatedKeys.getLong(1));
+                }            } else { throw new SQLException("Unable to create user."); }
 
         } catch (SQLException se) { logMessage(se.getMessage()); }
         return null;
@@ -179,11 +177,10 @@ public class SimpleJDBCRepository {
     public static void main(String[] args) {
         SimpleJDBCRepository repository = new SimpleJDBCRepository();
 
-        List<Long> idList = new ArrayList<>();
         for(int i = 0; i < 100; i++){
             repository.createUser(
                 User.builder()
-                    .id(Long.valueOf(Math.round(Math.random() * 100000)))
+                    .id(Math.round(Math.random() * 100000))
                     .firstName("Julio")
                     .lastName("Coltazar")
                     .age(126)
@@ -195,7 +192,7 @@ public class SimpleJDBCRepository {
         User newUser = repository.findUserById(
             repository.createUser(
                 User.builder()
-                    .id(Long.valueOf(Math.round(Math.random() * 100000)))
+                    .id(Math.round(Math.random() * 100000))
                     .firstName("Julio")
                     .lastName("Coltazar")
                     .age(126)
