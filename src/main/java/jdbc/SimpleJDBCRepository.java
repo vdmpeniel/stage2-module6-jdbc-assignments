@@ -180,11 +180,23 @@ public class SimpleJDBCRepository {
 
 
     /*
-     * Just for testing
+     * Testing
      *
      * */
     public static void main(String[] args) {
         SimpleJDBCRepository repository = new SimpleJDBCRepository();
+
+        List<Long> idList = new ArrayList<>();
+        for(int i = 0; i < 100; i++){
+            repository.createUser(
+                User.builder()
+                    .id(Long.valueOf(Math.round(Math.random() * 100000)))
+                    .firstName("Julio")
+                    .lastName("Coltazar")
+                    .age(126)
+                    .build()
+            );
+        }
 
         // create new user and get it by id
         User newUser = repository.findUserById(
@@ -202,10 +214,13 @@ public class SimpleJDBCRepository {
         // get user by name
         repository.logUserData(repository.findUserByName("Julio"));
 
+        // ge all users to update one
+        List<User> userList = repository.findAllUser();
+
         // update user
         repository.logUserData(repository.updateUser(
             User.builder()
-                .id(27L)
+                .id(userList.get((int) Math.round(Math.random() * userList.size())).getId())
                 .firstName("Julio")
                 .lastName("Iglesias")
                 .age(66)
