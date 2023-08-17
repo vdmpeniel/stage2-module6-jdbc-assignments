@@ -1,15 +1,13 @@
 package jdbc;
 
+import lombok.extern.slf4j.Slf4j;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.logging.Logger;
 
-
+@Slf4j
 public class CustomConnector {
-    private final Logger LOGGER = Logger.getLogger("CustomConnector");
 
     public Connection getConnection(String driver, String url) {
         try{
@@ -19,7 +17,7 @@ public class CustomConnector {
             return connection;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("Error: " + e.getMessage());
         }
         return null;
     }
@@ -32,7 +30,7 @@ public class CustomConnector {
             return connection;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("Error: " + e.getMessage());
         }
         return null;
     }
@@ -41,6 +39,6 @@ public class CustomConnector {
     private void logConnectionStatus(Connection connection){
         String status = (Objects.nonNull(connection)) ? "Connected to the database."
                 : "Failed to connect to database.";
-        LOGGER.info(status);
+        log.info(status);
     }
 }

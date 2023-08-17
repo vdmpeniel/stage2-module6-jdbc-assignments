@@ -3,6 +3,7 @@ package jdbc;
 import javax.sql.DataSource;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,12 +12,12 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+
+@Slf4j
 @Getter
 @Setter
 public class CustomDataSource implements DataSource {
 
-
-    private final Logger LOGGER = Logger.getLogger("CustomDataSource");
     private final String driver;
     private final String url;
     private final String name;
@@ -32,11 +33,7 @@ public class CustomDataSource implements DataSource {
         this.url = url;
         this.password = password;
         this.name = name;
-
     }
-
-
-
 
     public static CustomDataSource getInstance() {
         synchronized(CustomDataSource.class) {
@@ -83,24 +80,21 @@ public class CustomDataSource implements DataSource {
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        throw new UnsupportedOperationException("Not implemented");
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return LOGGER;
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        if (iface.isInstance(this)) {
-            return iface.cast(this);
-        }
-        throw new SQLException("DataSource is not a wrapper for " + iface);
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return iface.isInstance(this);
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_MSG);
     }
 }
