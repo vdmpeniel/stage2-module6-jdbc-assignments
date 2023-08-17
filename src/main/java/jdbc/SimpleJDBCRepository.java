@@ -32,7 +32,7 @@ public class SimpleJDBCRepository {
     private static final String FIND_ALL_USER_SQL = "SELECT id, firstname, lastname, age FROM myusers";
 
 
-    public SimpleJDBCRepository() throws SQLException{
+    public SimpleJDBCRepository(){
         try(Connection connection = dataSource.getConnection()) {
             if (!tableExists(connection)){
                 log.info("Table myusers is missing");
@@ -42,7 +42,6 @@ public class SimpleJDBCRepository {
 
         } catch (SQLException se){
             log.info(se.getMessage());
-            throw new SQLException(se);
         }
     }
 
