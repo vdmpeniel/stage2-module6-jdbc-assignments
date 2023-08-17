@@ -1,7 +1,6 @@
 package jdbc;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
@@ -10,17 +9,20 @@ import java.util.List;
 @Slf4j
 @Getter
 @Setter
-@NoArgsConstructor
+
 public class SimpleJDBCRepository {
 
     private final CustomDataSource dataSource = CustomDataSource.getInstance();
     private PreparedStatement preparedStatement = null;
     private Statement statement = null;
 
-    private final String ID = "id";
-    private final String FIRST_NAME = "firstname";
-    private final String LAST_NAME = "lastname";
-    private final String AGE = "age";
+    private static final String ID = "id";
+    private static final String FIRST_NAME = "firstname";
+    private static final String LAST_NAME = "lastname";
+    private static final String AGE = "age";
+
+    private static final String TABLE_EXIST_SQL = "SELECT 1 FROM myusers LIMIT 1";
+    private static final String CREATE_TALE_SQL = "CREATE TABLE myusers(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)";
 
     private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
@@ -28,6 +30,21 @@ public class SimpleJDBCRepository {
     private static final String FIND_USER_BY_ID_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE id = ?";
     private static final String FIND_USER_BY_NAME_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE firstname = ?";
     private static final String FIND_ALL_USER_SQL = "SELECT id, firstname, lastname, age FROM myusers";
+
+
+    public SimpleJDBCRepository() throws SQLException{
+        try(Connection connection = dataSource.getConnection()) {
+            if (!tableExists(connection)){
+                log.info("Table myusers is missing");
+                createTable(connection);
+            }
+            log.info("Table myusers is ready.");
+
+        } catch (SQLException se){
+            log.info(se.getMessage());
+            throw new SQLException(se);
+        }
+    }
 
     public Long createUser(User user) {
         try(Connection connection = dataSource.getConnection()){
@@ -144,5 +161,38 @@ public class SimpleJDBCRepository {
             .age(resultSet.getInt(AGE))
             .build();
     }
+
+
+    /* Sanity Check!
+    * */
+
+    private boolean tableExists(Connection connection) throws SQLException {
+        try{
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
+            return resultSet.next();
+
+        } catch (SQLException e) {
+            return false; // Table does not exist
+        }
+    }
+
+    private void createTable(Connection connection) throws SQLException {
+        statement = connection.createStatement();
+        int result = statement.executeUpdate(CREATE_TALE_SQL);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
