@@ -35,7 +35,7 @@ public class SimpleJDBCRepository {
     private static final String FIND_ALL_USER_SQL = String.format("SELECT id, firstname, lastname, age FROM %s", TABLE_NAME);
 
     public SimpleJDBCRepository(){
-        createTableIfNotExist();
+        //createTableIfNotExist();
     }
 
     public Long createUser(User user) {
@@ -47,12 +47,13 @@ public class SimpleJDBCRepository {
             preparedStatement.setInt(4, user.getAge());
             log.info(preparedStatement.toString());
 
+            final String ERROR_MSG = "Unable to create user.";
             if (preparedStatement.executeUpdate() > 0) { // affected rows
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
-                } else { throw new SQLException("Unable to create user."); }
-            } else { throw new SQLException("Unable to create user."); }
+                } else { throw new SQLException(ERROR_MSG); }
+            } else { throw new SQLException(ERROR_MSG); }
 
         } catch(SQLException se){
             log.info(se.getMessage());
@@ -124,12 +125,13 @@ public class SimpleJDBCRepository {
             preparedStatement.setLong(4, user.getId());
             log.info(preparedStatement.toString());
 
+            final String ERROR_MSG = "Unable to update user.";
             if (preparedStatement.executeUpdate() > 0) { // returns affected rows
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if(generatedKeys.next()) {
                     return findUserById(generatedKeys.getLong(1));
-                } else { throw new SQLException("Unable to create user."); }
-            } else { throw new SQLException("Unable to create user."); }
+                } else { throw new SQLException(ERROR_MSG); }
+            } else { throw new SQLException(ERROR_MSG); }
 
         } catch (SQLException se) {
             log.info(se.getMessage());
@@ -172,7 +174,6 @@ public class SimpleJDBCRepository {
 
         } catch (Exception e){
             log.info(e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 
@@ -205,11 +206,11 @@ public class SimpleJDBCRepository {
             User.builder()
                 .id(Math.abs(random.nextLong(10000)))
                 .firstName("put a name here")
-                .lastName("lastname")
+                .lastName("Gutierrez")
                 .age(Math.abs(random.nextInt(120)))
                 .build()
         ));
-        repo.findAllUser().forEach(user -> log.info(user.toString()));
+        repo.findAllUser().forEach(user -> log.info(user.getId() + " | " + user.getFirstName() + " | " + user.getLastName()));
     }
 
 }
