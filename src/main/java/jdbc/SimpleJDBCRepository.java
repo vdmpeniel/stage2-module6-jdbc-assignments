@@ -23,8 +23,8 @@ public class SimpleJDBCRepository {
     private static final String LAST_NAME = "lastname";
     private static final String AGE = "age";
 
-    private static final String TABLE_EXIST_SQL = "SELECT 1 FROM myusers LIMIT 1";
-    private static final String CREATE_TALE_SQL = "CREATE TABLE myusers(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)";
+    private static final String TABLE_EXIST_SQL = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'myusers')";
+    private static final String CREATE_TABLE_SQL = "CREATE TABLE myusers(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)";
 
     private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES(?, ?, ?, ?)";
     private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
@@ -177,9 +177,9 @@ public class SimpleJDBCRepository {
 
     private boolean doesTableExists(Connection connection) throws SQLException {
         try {
-            DatabaseMetaData metaData = connection.getMetaData();
-            ResultSet tables = metaData.getTables(null, null, "myusers", null);
-            return tables.next();
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
+            return resultSet.getBoolean(1);
 
         } catch(Exception e) {
             log.info(e.getMessage());
@@ -189,16 +189,11 @@ public class SimpleJDBCRepository {
 
     private void createTable(Connection connection) throws Exception {
         statement = connection.createStatement();
-        statement.executeUpdate(CREATE_TALE_SQL);
-        log.info("Table myusers is ready.");
+        statement.executeUpdate(CREATE_TABLE_SQL);
 
-        DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(null, null, "your_table", null);
-        if (tables.next()) {
-            log.info("Table 'myusers' has been created successfully.");
-        } else {
-            throw new SQLException("Unable to create myusers table.");
-        }
+        if (doesTableExists(connection)){
+            log.info("Table myusers is ready.");
+        } else { throw new SQLException("Unable to create table myusers"); }
     }
 
 
@@ -207,7 +202,7 @@ public class SimpleJDBCRepository {
 
     public static void main(String[] args) {
         SimpleJDBCRepository repo = new SimpleJDBCRepository();
-        IntStream.rangeClosed(0, 99).forEach(i -> repo.createUser(
+        IntStream.rangeClosed(0, 9).forEach(i -> repo.createUser(
             User.builder()
                 .id(Long.valueOf(i))
                 .firstName("put a name here")
