@@ -27,7 +27,7 @@ public class SimpleJDBCRepository {
     private static final String TABLE_EXIST_SQL = String.format("SELECT table_name FROM information_schema.tables WHERE table_name = '%s'", TABLE_NAME);
     private static final String CREATE_TABLE_SQL = String.format("CREATE TABLE %s(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)", TABLE_NAME);
 
-    private static final String CREATE_USER_SQL = String.format("INSERT INTO %s(id, firstname, lastname, age) VALUES(?, ?, ?, ?)", TABLE_NAME);
+    private static final String CREATE_USER_SQL = String.format("INSERT INTO %s(firstname, lastname, age) VALUES(?, ?, ?)", TABLE_NAME);
     private static final String UPDATE_USER_SQL = String.format("UPDATE %s SET firstname = ?, lastname = ?, age = ? WHERE id = ?", TABLE_NAME);
     private static final String DELETE_USER = String.format("DELETE FROM %s WHERE id = ?", TABLE_NAME);
     private static final String FIND_USER_BY_ID_SQL = String.format("SELECT id, firstname, lastname, age FROM %s WHERE id = ?", TABLE_NAME);
@@ -35,16 +35,14 @@ public class SimpleJDBCRepository {
     private static final String FIND_ALL_USER_SQL = String.format("SELECT id, firstname, lastname, age FROM %s", TABLE_NAME);
 
     public SimpleJDBCRepository(){
-        //createTableIfNotExist();
     }
 
     public Long createUser(User user) {
         try(Connection connection = dataSource.getConnection()){
             preparedStatement = connection.prepareStatement(CREATE_USER_SQL, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setLong(1, user.getId());
-            preparedStatement.setString(2, user.getFirstName());
-            preparedStatement.setString(3, user.getLastName());
-            preparedStatement.setInt(4, user.getAge());
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setInt(3, user.getAge());
             log.info(preparedStatement.toString());
 
             final String ERROR_MSG = "Unable to create user.";
@@ -204,7 +202,6 @@ public class SimpleJDBCRepository {
         Random random = new Random();
         IntStream.rangeClosed(0, 9).forEach(i -> repo.createUser(
             User.builder()
-                .id(Math.abs(random.nextLong(10000)))
                 .firstName("put a name here")
                 .lastName("Gutierrez")
                 .age(Math.abs(random.nextInt(120)))
