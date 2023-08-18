@@ -177,9 +177,9 @@ public class SimpleJDBCRepository {
 
     private boolean doesTableExists(Connection connection) throws SQLException {
         try {
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
-            return resultSet.next();
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet tables = metaData.getTables(null, null, "myusers", null);
+            return tables.next();
 
         } catch(Exception e) {
             log.info(e.getMessage());
