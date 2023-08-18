@@ -18,8 +18,9 @@ public class CustomConnector {
 
         } catch (Exception e) {
             log.info("Error: " + e.getMessage());
+            return null;
         }
-        return null;
+
     }
 
     public Connection getConnection(String driver, String url, String user, String password) throws SQLException{
@@ -31,14 +32,14 @@ public class CustomConnector {
 
         } catch (Exception e) {
             log.info("Error: " + e.getMessage());
+            return null;
         }
-        return null;
     }
 
 
     private void logConnectionStatus(Connection connection){
         String status = (Objects.nonNull(connection)) ? "Connected to the database."
-                : "Failed to connect to database.";
+            : "Failed to connect to database.";
         log.info(status);
     }
 }

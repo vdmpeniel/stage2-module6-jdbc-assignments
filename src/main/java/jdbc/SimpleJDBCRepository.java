@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
+
 @Slf4j
 @Getter
 @Setter
-
 public class SimpleJDBCRepository {
 
     private final CustomDataSource dataSource = CustomDataSource.getInstance();
@@ -31,18 +33,8 @@ public class SimpleJDBCRepository {
     private static final String FIND_USER_BY_NAME_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE firstname = ?";
     private static final String FIND_ALL_USER_SQL = "SELECT id, firstname, lastname, age FROM myusers";
 
-
     public SimpleJDBCRepository(){
-        try(Connection connection = dataSource.getConnection()) {
-            if (!tableExists(connection)){
-                log.info("Table myusers is missing");
-                createTable(connection);
-            }
-            log.info("Table myusers is ready.");
-
-        } catch (SQLException se){
-            log.info(se.getMessage());
-        }
+        createTableIfNotExist();
     }
 
     public Long createUser(User user) {
@@ -54,17 +46,18 @@ public class SimpleJDBCRepository {
             preparedStatement.setInt(4, user.getAge());
             log.info(preparedStatement.toString());
 
-            if (preparedStatement.executeUpdate() > 0) { // returns affected rows
+            if (preparedStatement.executeUpdate() > 0) { // affected rows
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
-                }
+                } else { throw new SQLException("Unable to create user."); }
             } else { throw new SQLException("Unable to create user."); }
 
         } catch(SQLException se){
             log.info(se.getMessage());
+            return null;
         }
-        return null;
+
     }
 
     public User findUserById(Long userId) {
@@ -76,12 +69,13 @@ public class SimpleJDBCRepository {
             ResultSet resultset = preparedStatement.executeQuery();
             if (resultset.next()) {
                 return buildUserFromResultSer(resultset);
-            } else { throw new SQLException("User with id:" + userId + " not found."); }
+            } else { throw new SQLException("User with id: " + userId + " not found."); }
 
         }    catch(SQLException se){
             log.info(se.getMessage());
+            return null;
         }
-        return null;
+
     }
 
     public User findUserByName(String userName) {
@@ -93,12 +87,12 @@ public class SimpleJDBCRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return buildUserFromResultSer(resultSet);
-            } else { throw new SQLException("User with name:" + userName + " not found."); }
+            } else { throw new SQLException("User with name: " + userName + " not found."); }
 
         } catch (SQLException se){
             log.info(se.getMessage());
+            return null;
         }
-        return null;
     }
 
     public List<User> findAllUser() {
@@ -113,8 +107,11 @@ public class SimpleJDBCRepository {
             }
             return userList;
 
-        } catch (SQLException se) { log.info(se.getMessage()); }
-        return new ArrayList<>();
+        } catch (SQLException se) {
+            log.info(se.getMessage());
+            return new ArrayList<>();
+        }
+
     }
 
     public User updateUser(User user) {
@@ -130,11 +127,13 @@ public class SimpleJDBCRepository {
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 if(generatedKeys.next()) {
                     return findUserById(generatedKeys.getLong(1));
-                }
+                } else { throw new SQLException("Unable to create user."); }
             } else { throw new SQLException("Unable to create user."); }
 
-        } catch (SQLException se) { log.info(se.getMessage()); }
-        return null;
+        } catch (SQLException se) {
+            log.info(se.getMessage());
+            return null;
+        }
     }
 
     public void deleteUser(Long userId) {
@@ -161,37 +160,56 @@ public class SimpleJDBCRepository {
             .build();
     }
 
-
     /* Sanity Check!
     * */
+    private void createTableIfNotExist(){
+        try(Connection connection = dataSource.getConnection()) {
+            if (!doesTableExists(connection)){
+                log.info("Table myusers is missing");
+                createTable(connection);
+            }
 
-    private boolean tableExists(Connection connection) throws SQLException {
-        try{
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
-            return resultSet.next();
-
-        } catch (SQLException e) {
-            return false; // Table does not exist
+        } catch (Exception e){
+            log.info(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    private void createTable(Connection connection) throws SQLException {
+    private boolean doesTableExists(Connection connection) throws SQLException {
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
+            return resultSet.next();
+    }
+
+    private void createTable(Connection connection) throws Exception {
         statement = connection.createStatement();
-        int result = statement.executeUpdate(CREATE_TALE_SQL);
+        statement.executeUpdate(CREATE_TALE_SQL);
+        log.info("Table myusers is ready.");
+
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet tables = metaData.getTables(null, null, "your_table", null);
+        if (tables.next()) {
+            log.info("Table 'myusers' has been created successfully.");
+        } else {
+            throw new SQLException("Unable to create myusers table.");
+        }
     }
 
 
 
 
 
-
-
-
-
-
-
-
-
+    public static void main(String[] args) {
+        SimpleJDBCRepository repo = new SimpleJDBCRepository();
+        IntStream.rangeClosed(0, 99).forEach(i -> repo.createUser(
+            User.builder()
+                .id(Long.valueOf(i))
+                .firstName("put a name here")
+                .lastName("lastname")
+                .age((new Random()).nextInt())
+                .build()
+        ));
+        repo.findAllUser().forEach(user -> log.info(user.toString()));
+    }
 
 }

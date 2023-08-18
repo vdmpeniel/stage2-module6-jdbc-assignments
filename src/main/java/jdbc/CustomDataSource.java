@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -103,27 +101,4 @@ public class CustomDataSource implements DataSource {
 }
 
 
-@Slf4j
-class PropertyFileLoader {
-    private final Properties properties = new Properties();
 
-    public PropertyFileLoader(String filename){
-        loadPropertyFile(filename);
-    }
-
-    private void loadPropertyFile(String filename){
-        // Load properties from file
-        try (InputStream inputStream = PropertyFileLoader.class
-                .getClassLoader()
-                .getResourceAsStream(filename)
-        ) {
-            properties.load(inputStream);
-
-        } catch (IOException ioe) {
-            log.info(ioe.getMessage());
-        }
-    }
-    public Properties getProperties(){
-        return properties;
-    }
-}
