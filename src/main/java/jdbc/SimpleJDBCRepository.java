@@ -22,16 +22,17 @@ public class SimpleJDBCRepository {
     private static final String FIRST_NAME = "firstname";
     private static final String LAST_NAME = "lastname";
     private static final String AGE = "age";
+    private static final String TABLE_NAME = "myusers";
 
-    private static final String TABLE_EXIST_SQL = "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'myusers')";
-    private static final String CREATE_TABLE_SQL = "CREATE TABLE myusers(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)";
+    private static final String TABLE_EXIST_SQL = String.format("SELECT table_name FROM information_schema.tables WHERE table_name = '%s'", TABLE_NAME);
+    private static final String CREATE_TABLE_SQL = String.format("CREATE TABLE %s(id bigint UNIQUE NOT NULL PRIMARY KEY, firstname varchar(255) NOT NULL, lastname varchar(255) NOT NULL, age int NOT NULL)", TABLE_NAME);
 
-    private static final String CREATE_USER_SQL = "INSERT INTO myusers(id, firstname, lastname, age) VALUES(?, ?, ?, ?)";
-    private static final String UPDATE_USER_SQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
-    private static final String DELETE_USER = "DELETE FROM myusers WHERE id = ?";
-    private static final String FIND_USER_BY_ID_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE id = ?";
-    private static final String FIND_USER_BY_NAME_SQL = "SELECT id, firstname, lastname, age FROM myusers WHERE firstname = ?";
-    private static final String FIND_ALL_USER_SQL = "SELECT id, firstname, lastname, age FROM myusers";
+    private static final String CREATE_USER_SQL = String.format("INSERT INTO %s(id, firstname, lastname, age) VALUES(?, ?, ?, ?)", TABLE_NAME);
+    private static final String UPDATE_USER_SQL = String.format("UPDATE %s SET firstname = ?, lastname = ?, age = ? WHERE id = ?", TABLE_NAME);
+    private static final String DELETE_USER = String.format("DELETE FROM %s WHERE id = ?", TABLE_NAME);
+    private static final String FIND_USER_BY_ID_SQL = String.format("SELECT id, firstname, lastname, age FROM %s WHERE id = ?", TABLE_NAME);
+    private static final String FIND_USER_BY_NAME_SQL = String.format("SELECT id, firstname, lastname, age FROM %s WHERE firstname = ?", TABLE_NAME);
+    private static final String FIND_ALL_USER_SQL = String.format("SELECT id, firstname, lastname, age FROM %s", TABLE_NAME);
 
     public SimpleJDBCRepository(){
         createTableIfNotExist();
@@ -165,7 +166,7 @@ public class SimpleJDBCRepository {
     private void createTableIfNotExist(){
         try(Connection connection = dataSource.getConnection()) {
             if (!doesTableExists(connection)){
-                log.info("Table myusers is missing");
+                log.info(String.format("Table %s is missing", TABLE_NAME));
                 createTable(connection);
             }
 
@@ -179,7 +180,7 @@ public class SimpleJDBCRepository {
         try {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
-            return resultSet.getBoolean(1);
+            return resultSet.next();
 
         } catch(Exception e) {
             log.info(e.getMessage());
@@ -192,22 +193,20 @@ public class SimpleJDBCRepository {
         statement.executeUpdate(CREATE_TABLE_SQL);
 
         if (doesTableExists(connection)){
-            log.info("Table myusers is ready.");
-        } else { throw new SQLException("Unable to create table myusers"); }
+            log.info(String.format("Table %s is ready.", TABLE_NAME));
+        } else { throw new SQLException(String.format("Unable to create table %s", TABLE_NAME)); }
     }
-
-
-
 
 
     public static void main(String[] args) {
         SimpleJDBCRepository repo = new SimpleJDBCRepository();
+        Random random = new Random();
         IntStream.rangeClosed(0, 9).forEach(i -> repo.createUser(
             User.builder()
-                .id(Long.valueOf(i))
+                .id(Math.abs(random.nextLong(10000)))
                 .firstName("put a name here")
                 .lastName("lastname")
-                .age((new Random()).nextInt())
+                .age(Math.abs(random.nextInt(120)))
                 .build()
         ));
         repo.findAllUser().forEach(user -> log.info(user.toString()));
