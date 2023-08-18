@@ -176,9 +176,15 @@ public class SimpleJDBCRepository {
     }
 
     private boolean doesTableExists(Connection connection) throws SQLException {
+        try {
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(TABLE_EXIST_SQL);
             return resultSet.next();
+
+        } catch(Exception e) {
+            log.info(e.getMessage());
+            return false;
+        }
     }
 
     private void createTable(Connection connection) throws Exception {
